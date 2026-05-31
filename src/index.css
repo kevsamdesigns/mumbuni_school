@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mumbuni Boys Senior School Brand System: Chocolate Red, Sky Blue, Gold and White. */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 26% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 26% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 26% 18%;
+
+    --primary: 0 59% 30%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 0 50% 42%;
+    --primary-deep: 0 64% 19%;
+
+    --secondary: 205 100% 68%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 33% 97%;
+    --muted-foreground: 220 13% 38%;
+
+    --accent: 47 89% 57%;
+    --accent-foreground: 220 26% 18%;
+
+    --chocolate: 0 59% 30%;
+    --chocolate-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 205 72% 82%;
+    --input: 210 25% 88%;
+    --ring: 205 100% 68%;
+
+    --radius: 0.5rem;
+
+    --gradient-hero: linear-gradient(110deg, hsl(0 64% 15% / 0.9), hsl(0 59% 30% / 0.72), hsl(205 100% 68% / 0.25));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-deep)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--secondary)));
+    --gradient-cta: linear-gradient(135deg, hsl(0 59% 30%), hsl(0 64% 19%) 58%, hsl(205 100% 68%));
+    --gradient-topbar: linear-gradient(90deg, #7A1F1F, #8B2E2E);
+    --gradient-footer: linear-gradient(135deg, #631616, #7A1F1F 55%, #8B2E2E);
+
+    --shadow-elegant: 0 14px 36px -16px hsl(0 59% 30% / 0.45);
+    --shadow-card: 0 10px 30px -18px hsl(220 26% 18% / 0.22);
+    --shadow-strong: 0 24px 60px -22px hsl(0 59% 18% / 0.45);
+    --shadow-glow: 0 0 34px hsl(205 100% 68% / 0.35);
+
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    @apply tracking-normal font-extrabold;
+  }
+
+  html { scroll-behavior: smooth; }
+}
+
+@layer utilities {
+  .text-gradient-primary {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .bg-hero-overlay { background: var(--gradient-hero); }
+  .bg-gradient-cta { background: var(--gradient-cta); }
+  .bg-gradient-primary { background: var(--gradient-primary); }
+  .bg-gradient-accent { background: var(--gradient-accent); }
+  .bg-gradient-topbar { background: var(--gradient-topbar); }
+  .bg-gradient-footer { background: var(--gradient-footer); }
+
+  .section-title-accent::after {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 4px;
+    margin: 1rem auto 0;
+    border-radius: 999px;
+    background: hsl(var(--accent));
+  }
+
+  .sky-curve {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 42px;
+    background: hsl(var(--secondary));
+    clip-path: ellipse(62% 100% at 50% 100%);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  .shadow-card-soft { box-shadow: var(--shadow-card); }
+  .shadow-strong { box-shadow: var(--shadow-strong); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .transition-smooth { transition: var(--transition-smooth); }
+  .transition-bounce { transition: var(--transition-bounce); }
+
+  .hover-lift {
+    @apply transition-smooth hover:-translate-y-1 hover:shadow-elegant;
+  }
+}
