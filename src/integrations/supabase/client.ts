@@ -2,16 +2,52 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+export enum UserRole {
+  Student = 'student',
+  Teacher = 'teacher',
+  Admin = 'admin'
+}
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
-
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
   }
 });
+
+// Helper function to generate student email
+export function generateStudentEmail(admissionNo: string): string {
+  return `${admissionNo}@student.local`;
+}
+
+// Role type guard helpers
+export async function isStudent(userId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('user_id', userId)
+    .single();
+  return data?.role === UserRole.Student;
+}
+
+export async function isTeacher(userId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('user_id', userId)
+    .single();
+  return data?.role === UserRole.Teacher;
+}
+
+export async function isAdmin(userId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('user_id', userId)
+    .single();
+  return data?.role === UserRole.Admin;
+}

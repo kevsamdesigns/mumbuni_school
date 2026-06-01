@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Stats } from "@/components/Stats";
+import { useContent } from "@/hooks/useContent";
 import heroStudents from "@/assets/hero-students-brand.png";
 import heroSign from "@/assets/brand-school-sign.png";
 import heroScience from "@/assets/brand-science-group.png";
@@ -30,14 +31,6 @@ const highlights = [
   { icon: Trophy, title: "Sports & Talent Development", desc: "Nurturing talent through sports and clubs.", color: "secondary" },
   { icon: ShieldCheck, title: "Leadership Opportunities", desc: "Developing leaders for tomorrow.", color: "primary" },
   { icon: Monitor, title: "Technology & Innovation", desc: "Preparing students for the digital world.", color: "secondary" },
-];
-
-const stats = [
-  { icon: Users, value: "1200+", label: "Students", color: "secondary" },
-  { icon: BookOpen, value: "80+", label: "Teachers", color: "primary" },
-  { icon: Building2, value: "20+", label: "Classrooms", color: "secondary" },
-  { icon: Trophy, value: "15+", label: "Clubs & Societies", color: "primary" },
-  { icon: CalendarDays, value: "10+", label: "Years of Excellence", color: "secondary" },
 ];
 
 const quickCards = [
@@ -81,8 +74,35 @@ const heroSlides = [
   { image: heroLeadership, alt: "Student leader speaking at the podium" },
 ];
 
+const homeDefaults = {
+  "hero.title": "Mumbuni Boys\nSenior School",
+  "hero.subtitle": "Empowering young men with knowledge, character, leadership, and excellence.",
+  "hero.cta": "Learn More",
+  "intro.heading": "Welcome to Mumbuni Boys Senior School",
+  "intro.body":
+    "Mumbuni Boys Senior School is committed to academic excellence, discipline, leadership, and holistic growth. We prepare young men to serve their communities with confidence, skill, and integrity.",
+  "principal.message":
+    "Welcome to Mumbuni Boys Senior School, a center of academic excellence, character formation, and holistic development.\n\nAt Mumbuni Boys, we believe that education extends beyond the classroom. Our mission is to nurture responsible, disciplined, and confident young men who are equipped with the knowledge, skills, and values needed to thrive in a rapidly changing world. Through quality teaching, innovation, mentorship, and co-curricular activities, we empower every learner to discover and maximize their potential.\n\nWe are committed to creating a supportive and inclusive learning environment where academic achievement, integrity, leadership, and personal growth are highly valued. Our dedicated staff work tirelessly to inspire excellence and cultivate a culture of hard work, respect, and lifelong learning.\n\nAs we continue to uphold our tradition of excellence, we warmly invite parents, guardians, alumni, and all stakeholders to partner with us in shaping the future of our learners. Together, we can prepare young men who will make meaningful contributions to their communities, our nation, and the world.\n\nThank you for visiting our website and for your interest in Mumbuni Boys Senior School.\n\nTogether We Excel.",
+  "stats.students": "800+",
+  "stats.teachers": "30+",
+  "stats.streams": "12",
+  "stats.alumni": "12000+",
+} as const;
+
+const parseStatValue = (value: string) => {
+  const trimmed = value.trim();
+  const numericValue = Number.parseInt(trimmed.replace(/,/g, "").replace(/[^\d]/g, ""), 10);
+  const suffix = trimmed.replace(/[\d,\s]/g, "") || "";
+
+  return {
+    value: Number.isNaN(numericValue) ? 0 : numericValue,
+    suffix,
+  };
+};
+
 const Home = () => {
   const [slide, setSlide] = useState(0);
+  const { getContent, loading } = useContent("home");
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -92,9 +112,35 @@ const Home = () => {
     return () => window.clearInterval(timer);
   }, []);
 
+  const heroTitle = getContent("hero.title", homeDefaults["hero.title"]);
+  const heroSubtitle = getContent("hero.subtitle", homeDefaults["hero.subtitle"]);
+  const heroCta = getContent("hero.cta", homeDefaults["hero.cta"]);
+  const introHeading = getContent("intro.heading", homeDefaults["intro.heading"]);
+  const introBody = getContent("intro.body", homeDefaults["intro.body"]);
+  const principalMessage = getContent("principal.message", homeDefaults["principal.message"]);
+  const studentStat = getContent("stats.students", homeDefaults["stats.students"]);
+  const teacherStat = getContent("stats.teachers", homeDefaults["stats.teachers"]);
+  const streamStat = getContent("stats.streams", homeDefaults["stats.streams"]);
+  const alumniStat = getContent("stats.alumni", homeDefaults["stats.alumni"]);
+
+  const glanceStats = [
+    { icon: Users, value: studentStat, label: "Students", color: "secondary" },
+    { icon: BookOpen, value: teacherStat, label: "Teachers", color: "primary" },
+    { icon: Building2, value: streamStat, label: "Streams", color: "secondary" },
+    { icon: Trophy, value: alumniStat, label: "Alumni", color: "primary" },
+    { icon: CalendarDays, value: "10+", label: "Years of Excellence", color: "secondary" },
+  ];
+
+  const counterStats = [
+    { ...parseStatValue(studentStat), label: "Students" },
+    { ...parseStatValue(teacherStat), label: "Teachers" },
+    { ...parseStatValue(streamStat), label: "Streams" },
+    { ...parseStatValue(alumniStat), label: "Alumni" },
+  ];
+
   return (
   <>
-    <section className="relative min-h-[520px] overflow-hidden bg-primary-deep md:min-h-[560px]">
+    <section className="relative min-h-[520px] overflow-hidden bg-primary-deep md:min-h-[560px]" aria-busy={loading}>
       {heroSlides.map((item, index) => (
         <img
           key={item.image}
@@ -114,7 +160,12 @@ const Home = () => {
       <div className="container relative z-10 flex min-h-[520px] items-center py-12 md:min-h-[560px] md:py-16">
         <div className="max-w-3xl text-white">
           <h1 className="font-display text-4xl font-black leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] sm:text-5xl md:text-6xl lg:text-7xl">
-            Mumbuni Boys<br />Senior School
+            {heroTitle.split("\n").map((line, index) => (
+              <span key={`${line}-${index}`}>
+                {line}
+                {index < heroTitle.split("\n").length - 1 && <br />}
+              </span>
+            ))}
           </h1>
           <div className="my-5 flex max-w-full items-center gap-3">
             <span className="h-0.5 w-10 shrink-0 bg-accent sm:w-16" />
@@ -122,10 +173,10 @@ const Home = () => {
             <span className="h-0.5 w-10 shrink-0 bg-accent sm:w-16" />
           </div>
           <p className="mb-7 max-w-xl text-base font-semibold leading-relaxed text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] md:text-xl">
-            Empowering young men with knowledge, character, leadership, and excellence.
+            {heroSubtitle}
           </p>
           <Button asChild className="bg-primary px-8 font-bold uppercase hover:bg-primary-deep">
-            <Link to="/about">Learn More</Link>
+            <Link to="/about">{heroCta}</Link>
           </Button>
         </div>
       </div>
@@ -139,6 +190,14 @@ const Home = () => {
             className={`h-2 rounded-full transition-smooth ${index === slide ? "w-9 bg-accent" : "w-2 bg-white/70 hover:bg-white"}`}
           />
         ))}
+      </div>
+    </section>
+
+    <section className="bg-background py-10 md:py-12">
+      <div className="container max-w-4xl text-center">
+        <h2 className="font-display text-2xl font-black uppercase text-primary md:text-3xl">{introHeading}</h2>
+        <div className="mx-auto mb-5 mt-2 h-1 w-12 bg-secondary" />
+        <p className="text-[15px] leading-relaxed text-foreground md:text-base">{introBody}</p>
       </div>
     </section>
 
@@ -172,20 +231,11 @@ const Home = () => {
           <h2 className="font-display text-2xl font-black uppercase text-primary md:text-3xl">Principal's Message</h2>
           <div className="mb-5 mt-2 h-1 w-12 bg-secondary" />
           <div className="space-y-3 text-[15px] leading-relaxed text-foreground">
-            <p>
-              Welcome to <strong className="text-primary-deep">Mumbuni Boys Senior School</strong>, a center of academic excellence, character formation, and holistic development.
-            </p>
-            <p>
-              At Mumbuni Boys, we believe that education extends beyond the classroom. Our mission is to nurture responsible, disciplined, and confident young men who are equipped with the knowledge, skills, and values needed to thrive in a rapidly changing world. Through quality teaching, innovation, mentorship, and co-curricular activities, we empower every learner to discover and maximize their potential.
-            </p>
-            <p>
-              We are committed to creating a supportive and inclusive learning environment where academic achievement, integrity, leadership, and personal growth are highly valued. Our dedicated staff work tirelessly to inspire excellence and cultivate a culture of hard work, respect, and lifelong learning.
-            </p>
-            <p>
-              As we continue to uphold our tradition of excellence, we warmly invite parents, guardians, alumni, and all stakeholders to partner with us in shaping the future of our learners. Together, we can prepare young men who will make meaningful contributions to their communities, our nation, and the world.
-            </p>
-            <p>Thank you for visiting our website and for your interest in Mumbuni Boys Senior School.</p>
-            <p className="font-display font-extrabold text-primary">Together We Excel.</p>
+            {principalMessage.split(/\n{2,}/).map((paragraph) => (
+              <p key={paragraph} className={paragraph.trim() === "Together We Excel." ? "font-display font-extrabold text-primary" : undefined}>
+                {paragraph}
+              </p>
+            ))}
             <div className="border-l-4 border-secondary pl-4 pt-1">
               <p className="font-display font-extrabold text-primary-deep">Mr. Peter Kilonzo</p>
               <p className="text-sm font-semibold text-foreground">Chief Principal</p>
@@ -203,7 +253,7 @@ const Home = () => {
           <div className="mx-auto mt-2 h-1 w-12 bg-secondary" />
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {stats.map((item) => (
+          {glanceStats.map((item) => (
             <article key={item.label} className="flex items-center justify-center gap-4 rounded-sm border border-border bg-card p-5 shadow-card-soft">
               <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-white ${item.color === "primary" ? "bg-primary" : "bg-secondary"}`}>
                 <item.icon className="h-7 w-7" />
@@ -235,7 +285,7 @@ const Home = () => {
       </div>
     </section>
 
-    <Stats />
+    <Stats items={counterStats} />
   </>
   );
 };

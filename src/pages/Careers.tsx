@@ -4,42 +4,82 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useContent } from "@/hooks/useContent";
 import { useToast } from "@/hooks/use-toast";
 
-const openings = [
-  {
-    title: "Mathematics Teacher (Senior School)",
-    type: "Full-Time",
-    location: "Machakos, Kenya",
-    desc: "TSC-registered teacher with a passion for nurturing boys in STEM. Minimum Bachelor of Education (Mathematics).",
-  },
-  {
-    title: "Biology / Chemistry Teacher",
-    type: "Full-Time",
-    location: "Machakos, Kenya",
-    desc: "Experience with CBC/CBE & 8-4-4 curriculum. Ability to lead practicals and mentor science club members.",
-  },
-  {
-    title: "Boarding Matron",
-    type: "Full-Time (Resident)",
-    location: "Machakos, Kenya",
-    desc: "Caring, mature boarding staff member to oversee dormitory life, welfare and discipline of boarding students.",
-  },
-  {
-    title: "School Bus Driver",
-    type: "Full-Time",
-    location: "Machakos, Kenya",
-    desc: "Valid PSV licence, clean driving record, minimum 5 years experience driving school transport.",
-  },
-];
+const careersDefaults = {
+  "header.eyebrow": "Join Our Team",
+  "header.title": "Careers & Job Opportunities",
+  "header.subtitle": "Be part of a community that develops disciplined, confident and responsible young men.",
+  "benefit.1.title": "Professional Growth",
+  "benefit.1.desc": "Continuous training and clear career progression.",
+  "benefit.2.title": "Supportive Team",
+  "benefit.2.desc": "Work with passionate, like-minded educators.",
+  "benefit.3.title": "Competitive Package",
+  "benefit.3.desc": "Attractive remuneration and benefits.",
+  "openings.eyebrow": "Open Positions",
+  "openings.heading": "Current Vacancies",
+  "openings.body": "Explore our current openings and apply using the form below.",
+  "job.1.title": "Mathematics Teacher (Senior School)",
+  "job.1.type": "Full-Time",
+  "job.1.location": "Machakos, Kenya",
+  "job.1.desc": "TSC-registered teacher with a passion for nurturing boys in STEM. Minimum Bachelor of Education (Mathematics).",
+  "job.2.title": "Biology / Chemistry Teacher",
+  "job.2.type": "Full-Time",
+  "job.2.location": "Machakos, Kenya",
+  "job.2.desc": "Experience with CBC/CBE & 8-4-4 curriculum. Ability to lead practicals and mentor science club members.",
+  "job.3.title": "Boarding Matron",
+  "job.3.type": "Full-Time (Resident)",
+  "job.3.location": "Machakos, Kenya",
+  "job.3.desc": "Caring, mature boarding staff member to oversee dormitory life, welfare and discipline of boarding students.",
+  "job.4.title": "School Bus Driver",
+  "job.4.type": "Full-Time",
+  "job.4.location": "Machakos, Kenya",
+  "job.4.desc": "Valid PSV licence, clean driving record, minimum 5 years experience driving school transport.",
+  "job.apply": "Apply for this role",
+  "form.eyebrow": "Apply Now",
+  "form.heading": "Submit Your Application",
+  "form.fullName": "Full Name",
+  "form.fullNamePlaceholder": "Your full name",
+  "form.email": "Email",
+  "form.emailPlaceholder": "you@example.com",
+  "form.phone": "Phone",
+  "form.phonePlaceholder": "07XX XXX XXX",
+  "form.position": "Position",
+  "form.positionPlaceholder": "Position applying for",
+  "form.experience": "Years of Experience",
+  "form.experiencePlaceholder": "e.g. 5 years",
+  "form.cover": "Cover Letter / Why You?",
+  "form.coverPlaceholder": "Tell us about your qualifications and why you'd be a great fit...",
+  "form.cv": "CV / Resume Link",
+  "form.cvPlaceholder": "Link to your CV (Google Drive, Dropbox, etc.)",
+  "form.cvHelp": "Or email your CV to mumbuniboys32@gmail.com",
+  "form.submit": "Submit Application",
+  "toast.title": "Application Received!",
+  "toast.body": "Thank you - our HR team will review and respond soon.",
+} as const;
 
 const Careers = () => {
+  const { getContent } = useContent("careers");
   const { toast } = useToast();
   const [position, setPosition] = useState("");
 
+  const benefits = [
+    { icon: GraduationCap, title: getContent("benefit.1.title", careersDefaults["benefit.1.title"]), desc: getContent("benefit.1.desc", careersDefaults["benefit.1.desc"]) },
+    { icon: Users, title: getContent("benefit.2.title", careersDefaults["benefit.2.title"]), desc: getContent("benefit.2.desc", careersDefaults["benefit.2.desc"]) },
+    { icon: Award, title: getContent("benefit.3.title", careersDefaults["benefit.3.title"]), desc: getContent("benefit.3.desc", careersDefaults["benefit.3.desc"]) },
+  ];
+
+  const openings = [1, 2, 3, 4].map((index) => ({
+    title: getContent(`job.${index}.title`, careersDefaults[`job.${index}.title` as keyof typeof careersDefaults]),
+    type: getContent(`job.${index}.type`, careersDefaults[`job.${index}.type` as keyof typeof careersDefaults]),
+    location: getContent(`job.${index}.location`, careersDefaults[`job.${index}.location` as keyof typeof careersDefaults]),
+    desc: getContent(`job.${index}.desc`, careersDefaults[`job.${index}.desc` as keyof typeof careersDefaults]),
+  }));
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Application Received!", description: "Thank you — our HR team will review and respond soon." });
+    toast({ title: getContent("toast.title", careersDefaults["toast.title"]), description: getContent("toast.body", careersDefaults["toast.body"]) });
     (e.target as HTMLFormElement).reset();
     setPosition("");
   };
@@ -47,20 +87,15 @@ const Careers = () => {
   return (
     <>
       <PageHeader
-        eyebrow="Join Our Team"
-        title="Careers & Job Opportunities"
-        subtitle="Be part of a community that develops disciplined, confident and responsible young men."
+        eyebrow={getContent("header.eyebrow", careersDefaults["header.eyebrow"])}
+        title={getContent("header.title", careersDefaults["header.title"])}
+        subtitle={getContent("header.subtitle", careersDefaults["header.subtitle"])}
       />
 
-      {/* Why work with us */}
       <section className="py-20 md:py-24">
         <div className="container">
           <div className="grid md:grid-cols-3 gap-6 mb-16">
-            {[
-              { icon: GraduationCap, title: "Professional Growth", desc: "Continuous training and clear career progression." },
-              { icon: Users, title: "Supportive Team", desc: "Work with passionate, like-minded educators." },
-              { icon: Award, title: "Competitive Package", desc: "Attractive remuneration and benefits." },
-            ].map((b) => (
+            {benefits.map((b) => (
               <div key={b.title} className="p-7 rounded-lg bg-card border border-secondary/40 shadow-card-soft text-center hover-lift">
                 <div className="inline-flex w-14 h-14 rounded-lg bg-gradient-accent text-primary-deep items-center justify-center mb-4 shadow-elegant">
                   <b.icon className="w-7 h-7" />
@@ -72,9 +107,9 @@ const Careers = () => {
           </div>
 
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <p className="text-secondary font-semibold uppercase tracking-[0.25em] text-xs mb-3">Open Positions</p>
-            <h2 className="font-display text-4xl md:text-5xl text-primary-deep mb-4">Current Vacancies</h2>
-            <p className="text-muted-foreground text-lg">Explore our current openings and apply using the form below.</p>
+            <p className="text-secondary font-semibold uppercase tracking-[0.25em] text-xs mb-3">{getContent("openings.eyebrow", careersDefaults["openings.eyebrow"])}</p>
+            <h2 className="font-display text-4xl md:text-5xl text-primary-deep mb-4">{getContent("openings.heading", careersDefaults["openings.heading"])}</h2>
+            <p className="text-muted-foreground text-lg">{getContent("openings.body", careersDefaults["openings.body"])}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-16">
@@ -101,55 +136,54 @@ const Careers = () => {
                     document.getElementById("apply-form")?.scrollIntoView({ behavior: "smooth" });
                   }}
                 >
-                  Apply for this role
+                  {getContent("job.apply", careersDefaults["job.apply"])}
                 </Button>
               </article>
             ))}
           </div>
 
-          {/* Application Form */}
           <div id="apply-form" className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
-              <p className="text-secondary font-semibold uppercase tracking-[0.25em] text-xs mb-3">Apply Now</p>
-              <h2 className="font-display text-3xl md:text-4xl text-primary-deep">Submit Your Application</h2>
+              <p className="text-secondary font-semibold uppercase tracking-[0.25em] text-xs mb-3">{getContent("form.eyebrow", careersDefaults["form.eyebrow"])}</p>
+              <h2 className="font-display text-3xl md:text-4xl text-primary-deep">{getContent("form.heading", careersDefaults["form.heading"])}</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="p-8 rounded-2xl bg-card border border-border shadow-card-soft space-y-5">
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Full Name</label>
-                  <Input required placeholder="Your full name" />
+                  <label className="block text-sm font-semibold text-foreground mb-2">{getContent("form.fullName", careersDefaults["form.fullName"])}</label>
+                  <Input required placeholder={getContent("form.fullNamePlaceholder", careersDefaults["form.fullNamePlaceholder"])} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Email</label>
-                  <Input required type="email" placeholder="you@example.com" />
+                  <label className="block text-sm font-semibold text-foreground mb-2">{getContent("form.email", careersDefaults["form.email"])}</label>
+                  <Input required type="email" placeholder={getContent("form.emailPlaceholder", careersDefaults["form.emailPlaceholder"])} />
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Phone</label>
-                  <Input required placeholder="07XX XXX XXX" />
+                  <label className="block text-sm font-semibold text-foreground mb-2">{getContent("form.phone", careersDefaults["form.phone"])}</label>
+                  <Input required placeholder={getContent("form.phonePlaceholder", careersDefaults["form.phonePlaceholder"])} />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Position</label>
-                  <Input required value={position} onChange={(e) => setPosition(e.target.value)} placeholder="Position applying for" />
+                  <label className="block text-sm font-semibold text-foreground mb-2">{getContent("form.position", careersDefaults["form.position"])}</label>
+                  <Input required value={position} onChange={(e) => setPosition(e.target.value)} placeholder={getContent("form.positionPlaceholder", careersDefaults["form.positionPlaceholder"])} />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Years of Experience</label>
-                <Input required placeholder="e.g. 5 years" />
+                <label className="block text-sm font-semibold text-foreground mb-2">{getContent("form.experience", careersDefaults["form.experience"])}</label>
+                <Input required placeholder={getContent("form.experiencePlaceholder", careersDefaults["form.experiencePlaceholder"])} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Cover Letter / Why You?</label>
-                <Textarea required rows={5} placeholder="Tell us about your qualifications and why you'd be a great fit..." />
+                <label className="block text-sm font-semibold text-foreground mb-2">{getContent("form.cover", careersDefaults["form.cover"])}</label>
+                <Textarea required rows={5} placeholder={getContent("form.coverPlaceholder", careersDefaults["form.coverPlaceholder"])} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">CV / Resume Link</label>
-                <Input type="url" placeholder="Link to your CV (Google Drive, Dropbox, etc.)" />
-                <p className="text-xs text-muted-foreground mt-1">Or email your CV to mumbuniboys32@gmail.com</p>
+                <label className="block text-sm font-semibold text-foreground mb-2">{getContent("form.cv", careersDefaults["form.cv"])}</label>
+                <Input type="url" placeholder={getContent("form.cvPlaceholder", careersDefaults["form.cvPlaceholder"])} />
+                <p className="text-xs text-muted-foreground mt-1">{getContent("form.cvHelp", careersDefaults["form.cvHelp"])}</p>
               </div>
               <Button type="submit" variant="hero" size="lg" className="w-full">
-                Submit Application <Send className="ml-2 w-4 h-4" />
+                {getContent("form.submit", careersDefaults["form.submit"])} <Send className="ml-2 w-4 h-4" />
               </Button>
             </form>
           </div>

@@ -16,8 +16,9 @@ import Careers from "./pages/Careers";
 import Admissions from "./pages/Admissions";
 import Rules from "./pages/Rules";
 import News from "./pages/News";
-import Auth from "./pages/Auth";
+import { AuthPage } from "./pages/AuthPage";
 import StudentPortal from "./pages/StudentPortal";
+import { TeacherDashboard } from "./pages/TeacherDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -42,8 +43,9 @@ const App = () => (
               <Route path="/admissions" element={<Admissions />} />
               <Route path="/news" element={<News />} />
               <Route path="/rules" element={<Rules />} />
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth" element={<AuthPage />} />
               <Route path="/portal" element={<ProtectedRoute requireStudent><StudentPortal /></ProtectedRoute>} />
+              <Route path="/teacher" element={<ProtectedRoute requireTeacher><TeacherDashboard /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
             </Route>
             <Route path="*" element={<NotFound />} />

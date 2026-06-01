@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-const stats = [
+export type StatsItem = {
+  value: number;
+  suffix: string;
+  label: string;
+};
+
+const defaultStats: StatsItem[] = [
   { value: 800, suffix: "+", label: "Students" },
   { value: 30, suffix: "+", label: "Teachers" },
   { value: 12, suffix: "", label: "Streams" },
@@ -36,7 +42,7 @@ const StatItem = ({ value, suffix, label, active }: { value: number; suffix: str
   );
 };
 
-export const Stats = () => {
+export const Stats = ({ items = defaultStats }: { items?: StatsItem[] }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
 
@@ -51,7 +57,7 @@ export const Stats = () => {
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
       <div className="container relative">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-7">
-          {stats.map((s) => (
+          {items.map((s) => (
             <StatItem key={s.label} {...s} active={active} />
           ))}
         </div>

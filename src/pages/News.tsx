@@ -1,36 +1,41 @@
 import { CalendarDays, Megaphone, Trophy, BookOpen, Users } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { useContent } from "@/hooks/useContent";
 
-const news = [
-  {
-    icon: Megaphone,
-    title: "Admissions Open",
-    date: "Current Term",
-    desc: "Parents and guardians can contact the school office for admission enquiries, reporting details and available vacancies.",
-  },
-  {
-    icon: BookOpen,
-    title: "Academic Mentorship Programme",
-    date: "This Term",
-    desc: "Students continue to receive structured academic guidance, study planning and subject mentorship from their teachers.",
-  },
-  {
-    icon: Trophy,
-    title: "Sports and Co-curricular Activities",
-    date: "Ongoing",
-    desc: "Games, clubs and student leadership activities remain central to holistic development at Mumbuni Boys Senior School.",
-  },
-  {
-    icon: Users,
-    title: "Parent Engagement",
-    date: "Upcoming",
-    desc: "Parents are encouraged to stay in touch with class teachers and the administration for updates on learner progress.",
-  },
-];
+const newsDefaults = {
+  "header.eyebrow": "News & Announcements",
+  "header.title": "School News",
+  "header.subtitle": "Latest updates, notices and announcements from Mumbuni Boys Senior School.",
+  "item.1.title": "Admissions Open",
+  "item.1.date": "Current Term",
+  "item.1.desc": "Parents and guardians can contact the school office for admission enquiries, reporting details and available vacancies.",
+  "item.2.title": "Academic Mentorship Programme",
+  "item.2.date": "This Term",
+  "item.2.desc": "Students continue to receive structured academic guidance, study planning and subject mentorship from their teachers.",
+  "item.3.title": "Sports and Co-curricular Activities",
+  "item.3.date": "Ongoing",
+  "item.3.desc": "Games, clubs and student leadership activities remain central to holistic development at Mumbuni Boys Senior School.",
+  "item.4.title": "Parent Engagement",
+  "item.4.date": "Upcoming",
+  "item.4.desc": "Parents are encouraged to stay in touch with class teachers and the administration for updates on learner progress.",
+} as const;
 
-const News = () => (
+const News = () => {
+  const { getContent } = useContent("news");
+  const news = [
+    { icon: Megaphone, title: getContent("item.1.title", newsDefaults["item.1.title"]), date: getContent("item.1.date", newsDefaults["item.1.date"]), desc: getContent("item.1.desc", newsDefaults["item.1.desc"]) },
+    { icon: BookOpen, title: getContent("item.2.title", newsDefaults["item.2.title"]), date: getContent("item.2.date", newsDefaults["item.2.date"]), desc: getContent("item.2.desc", newsDefaults["item.2.desc"]) },
+    { icon: Trophy, title: getContent("item.3.title", newsDefaults["item.3.title"]), date: getContent("item.3.date", newsDefaults["item.3.date"]), desc: getContent("item.3.desc", newsDefaults["item.3.desc"]) },
+    { icon: Users, title: getContent("item.4.title", newsDefaults["item.4.title"]), date: getContent("item.4.date", newsDefaults["item.4.date"]), desc: getContent("item.4.desc", newsDefaults["item.4.desc"]) },
+  ];
+
+  return (
   <>
-    <PageHeader eyebrow="News & Announcements" title="School News" subtitle="Latest updates, notices and announcements from Mumbuni Boys Senior School." />
+    <PageHeader
+      eyebrow={getContent("header.eyebrow", newsDefaults["header.eyebrow"])}
+      title={getContent("header.title", newsDefaults["header.title"])}
+      subtitle={getContent("header.subtitle", newsDefaults["header.subtitle"])}
+    />
 
     <section className="py-20 md:py-24">
       <div className="container">
@@ -55,6 +60,7 @@ const News = () => (
       </div>
     </section>
   </>
-);
+  );
+};
 
 export default News;
