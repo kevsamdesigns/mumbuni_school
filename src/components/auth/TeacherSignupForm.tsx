@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function TeacherSignupForm() {
   const [formData, setFormData] = useState({
@@ -27,7 +29,12 @@ export function TeacherSignupForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -107,58 +114,70 @@ export function TeacherSignupForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Teacher Registration</h2>
-      {error && <div className="error">{error}</div>}
-      {success && <div className="success">Registration successful! Awaiting admin approval.</div>}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <h2 className="text-xl font-bold">Teacher Registration</h2>
+      {error && <div className="text-red-600">{error}</div>}
+      {success && <div className="text-green-600">Registration successful! Awaiting admin approval.</div>}
       
-      <div>
-        <label>Staff Number*</label>
-        <input 
-          type="text" 
-          name="staff_no" 
-          value={formData.staff_no} 
-          onChange={handleChange} 
-          required 
+      <div className="space-y-2">
+        <Label>Staff Number*</Label>
+        <Input
+          type="text"
+          name="staff_no"
+          value={formData.staff_no}
+          onChange={handleChange}
+          placeholder="Enter staff number"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+          required
         />
       </div>
 
-      <div>
-        <label>Full Name*</label>
-        <input 
-          type="text" 
-          name="full_name" 
-          value={formData.full_name} 
-          onChange={handleChange} 
-          required 
+      <div className="space-y-2">
+        <Label>Full Name*</Label>
+        <Input
+          type="text"
+          name="full_name"
+          value={formData.full_name}
+          onChange={handleChange}
+          placeholder="Enter full name"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+          required
         />
       </div>
 
-      <div>
-        <label>National ID*</label>
-        <input 
-          type="text" 
-          name="national_id" 
-          value={formData.national_id} 
-          onChange={handleChange} 
-          required 
+      <div className="space-y-2">
+        <Label>National ID*</Label>
+        <Input
+          type="text"
+          name="national_id"
+          value={formData.national_id}
+          onChange={handleChange}
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+          required
         />
       </div>
 
-      <div>
-        <label>TSC Number*</label>
-        <input 
-          type="text" 
-          name="tsc_no" 
-          value={formData.tsc_no} 
-          onChange={handleChange} 
-          required 
+      <div className="space-y-2">
+        <Label>TSC Number*</Label>
+        <Input
+          type="text"
+          name="tsc_no"
+          value={formData.tsc_no}
+          onChange={handleChange}
+          placeholder="Enter TSC number"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+          required
         />
       </div>
 
       <div>
         <label>Gender</label>
-        <select name="gender" value={formData.gender} onChange={handleChange}>
+        <select 
+          name="gender" 
+          value={formData.gender} 
+          onChange={handleSelectChange}
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+        >
           <option value="">Select Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
@@ -175,14 +194,16 @@ export function TeacherSignupForm() {
         />
       </div>
 
-      <div>
-        <label>Phone Number*</label>
-        <input 
-          type="tel" 
-          name="phone" 
-          value={formData.phone} 
-          onChange={handleChange} 
-          required 
+      <div className="space-y-2">
+        <Label>Phone Number*</Label>
+        <Input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          placeholder="Enter phone number"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+          required
         />
       </div>
 
@@ -242,7 +263,13 @@ export function TeacherSignupForm() {
 
       <div>
         <label>Employment Type*</label>
-        <select name="employment_type" value={formData.employment_type} onChange={handleChange} required>
+        <select 
+          name="employment_type" 
+          value={formData.employment_type} 
+          onChange={handleSelectChange}
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+          required
+        >
           <option value="">Select Type</option>
           <option value="permanent">Permanent</option>
           <option value="contract">Contract</option>
