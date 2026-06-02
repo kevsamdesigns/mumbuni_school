@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
+import { LiveSupportChat } from "@/components/LiveSupportChat";
 
 export const Layout = () => (
   <div className="min-h-screen flex flex-col bg-background">
@@ -10,6 +10,6 @@ export const Layout = () => (
       <Outlet />
     </main>
     <Footer />
-    <FloatingWhatsApp />
+    <LiveSupportChat />
   </div>
 );

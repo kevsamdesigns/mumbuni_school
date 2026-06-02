@@ -6,10 +6,11 @@ interface Props {
   children: React.ReactNode;
   requireAdmin?: boolean;
   requireStudent?: boolean;
+  requireTeacher?: boolean;
 }
 
-export const ProtectedRoute = ({ children, requireAdmin, requireStudent }: Props) => {
-  const { user, loading, isAdmin, isStudent } = useAuth();
+export const ProtectedRoute = ({ children, requireAdmin, requireStudent, requireTeacher }: Props) => {
+  const { user, loading, isAdmin, isStudent, isTeacher } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -23,6 +24,7 @@ export const ProtectedRoute = ({ children, requireAdmin, requireStudent }: Props
   if (!user) return <Navigate to="/auth" state={{ from: location }} replace />;
   if (requireAdmin && !isAdmin) return <Navigate to="/" replace />;
   if (requireStudent && !isStudent && !isAdmin) return <Navigate to="/" replace />;
+  if (requireTeacher && !isTeacher && !isAdmin) return <Navigate to="/" replace />;
 
   return <>{children}</>;
 };

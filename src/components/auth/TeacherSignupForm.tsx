@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export function TeacherSignupForm() {
   const [formData, setFormData] = useState({
@@ -74,7 +75,7 @@ export function TeacherSignupForm() {
 
         if (uploadError) throw uploadError;
 
-        photoUrl = `${process.env.VITE_SUPABASE_URL}/storage/v1/object/public/teacher-photos/${fileName}`;
+        photoUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/teacher-photos/${fileName}`;
       }
 
       // Create teacher profile
@@ -107,7 +108,7 @@ export function TeacherSignupForm() {
       
       setSuccess(true);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -170,8 +171,8 @@ export function TeacherSignupForm() {
         />
       </div>
 
-      <div>
-        <label>Gender</label>
+      <div className="space-y-2">
+        <Label>Gender</Label>
         <select 
           name="gender" 
           value={formData.gender} 
@@ -184,13 +185,14 @@ export function TeacherSignupForm() {
         </select>
       </div>
 
-      <div>
-        <label>Date of Birth</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Date of Birth</Label>
+        <Input 
           type="date" 
           name="date_of_birth" 
           value={formData.date_of_birth} 
           onChange={handleChange} 
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
@@ -207,62 +209,72 @@ export function TeacherSignupForm() {
         />
       </div>
 
-      <div>
-        <label>Email*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Email*</Label>
+        <Input 
           type="email" 
           name="email" 
           value={formData.email} 
           onChange={handleChange} 
+          placeholder="Enter email address"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <div>
-        <label>Department*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Department*</Label>
+        <Input 
           type="text" 
           name="department" 
           value={formData.department} 
           onChange={handleChange} 
+          placeholder="Enter department"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <div>
-        <label>Subject 1*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Subject 1*</Label>
+        <Input 
           type="text" 
           name="subject1" 
           value={formData.subject1} 
           onChange={handleChange} 
+          placeholder="Enter first subject"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <div>
-        <label>Subject 2</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Subject 2</Label>
+        <Input 
           type="text" 
           name="subject2" 
           value={formData.subject2} 
           onChange={handleChange} 
+          placeholder="Enter second subject"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
-      <div>
-        <label>Qualification*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Qualification*</Label>
+        <Input 
           type="text" 
           name="qualification" 
           value={formData.qualification} 
           onChange={handleChange} 
+          placeholder="Enter qualification"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <div>
-        <label>Employment Type*</label>
+      <div className="space-y-2">
+        <Label>Employment Type*</Label>
         <select 
           name="employment_type" 
           value={formData.employment_type} 
@@ -277,70 +289,80 @@ export function TeacherSignupForm() {
         </select>
       </div>
 
-      <div>
-        <label>Date Joined</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Date Joined</Label>
+        <Input 
           type="date" 
           name="date_joined" 
           value={formData.date_joined} 
           onChange={handleChange} 
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
-      <div>
-        <label>Address</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Address</Label>
+        <Input 
           type="text" 
           name="address" 
           value={formData.address} 
           onChange={handleChange} 
+          placeholder="Enter address"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
-      <div>
-        <label>Emergency Contact</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Emergency Contact</Label>
+        <Input 
           type="text" 
           name="emergency_contact" 
           value={formData.emergency_contact} 
           onChange={handleChange} 
+          placeholder="Enter emergency contact"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
-      <div>
-        <label>Passport Photo</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Passport Photo</Label>
+        <Input 
           type="file" 
           accept="image/*" 
           onChange={handlePhotoUpload} 
+          className="w-full h-auto border-2 border-gray-300 rounded-lg px-4 py-3 bg-white text-black file:mr-4 file:rounded-md file:border-0 file:bg-red-700 file:px-4 file:py-2 file:text-white hover:file:bg-red-800 focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
-      <div>
-        <label>Password*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Password*</Label>
+        <Input 
           type="password" 
           name="password" 
           value={formData.password} 
           onChange={handleChange} 
+          placeholder="Enter password"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <div>
-        <label>Confirm Password*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Confirm Password*</Label>
+        <Input 
           type="password" 
           name="confirm_password" 
           value={formData.confirm_password} 
           onChange={handleChange} 
+          placeholder="Confirm password"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <button type="submit" disabled={loading}>
+      <Button type="submit" className="w-full h-12" disabled={loading}>
         {loading ? 'Registering...' : 'Register'}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { invalidateContent } from "@/hooks/useContent";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,6 +13,12 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { LogOut, Save, Trash2, Upload, Check, X, Image as ImageIcon } from "lucide-react";
+
+type ContentBlockRow = Pick<Tables<"content_blocks">, "section" | "value">;
+type MediaItem = Tables<"media_items">;
+type Profile = Tables<"profiles">;
+type Result = Tables<"results">;
+type AdminInvite = Tables<"admin_invites">;
 
 // Editable content schema — every page section the admin can edit
 const field = (key: string, label: string, type: "text" | "textarea" = "text") => ({ key, label, type });
@@ -316,7 +323,7 @@ const ContentEditor = () => {
     setLoading(true);
     supabase.from("content_blocks").select("section,value").eq("page", page).then(({ data }) => {
       const m: Record<string, string> = {};
-      (data ?? []).forEach((r: any) => { m[r.section] = r.value ?? ""; });
+      ((data as ContentBlockRow[] | null) ?? []).forEach((r) => { m[r.section] = r.value ?? ""; });
       setValues(m);
       setLoading(false);
     });
@@ -365,7 +372,7 @@ const ContentEditor = () => {
 
 // ============== MEDIA ==============
 const MediaManager = () => {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<MediaItem[]>([]);
   const [collection, setCollection] = useState("gallery");
   const [uploading, setUploading] = useState(false);
 
@@ -393,7 +400,7 @@ const MediaManager = () => {
     load();
   };
 
-  const remove = async (item: any) => {
+  const remove = async (item: MediaItem) => {
     if (!confirm("Delete this image?")) return;
     await supabase.storage.from("site-media").remove([item.storage_path]);
     await supabase.from("media_items").delete().eq("id", item.id);
@@ -444,32 +451,32 @@ const MediaManager = () => {
 
 // ============== STUDENTS ==============
 const StudentManager = () => {
-  const [rows, setRows] = useState<any[]>([]);
+  const [rows, setRows] = useState<Profile[]>([]);
   const load = async () => {
     const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
     setRows(data ?? []);
   };
   useEffect(() => { load(); }, []);
 
-  const setApproved = async (id: string, approved: boolean) => {
-    const { error } = await supabase.from("profiles").update({ approved }).eq("id", id);
+  const setApproved = async (userId: string, approved: boolean) => {
+    const { error } = await supabase.from("profiles").update({ approved }).eq("user_id", userId);
     if (error) toast.error(error.message); else { toast.success(approved ? "Approved" : "Revoked"); load(); }
   };
-  const del = async (id: string) => {
-    if (!confirm("Delete this student profile? (auth account is kept)")) return;
-    const { error } = await supabase.from("profiles").delete().eq("id", id);
+  const del = async (userId: string) => {
+    if (!confirm("Delete this profile? (auth account is kept)")) return;
+    const { error } = await supabase.from("profiles").delete().eq("user_id", userId);
     if (error) toast.error(error.message); else { toast.success("Deleted"); load(); }
   };
 
   return (
     <Card>
-      <CardHeader><CardTitle>Student Accounts</CardTitle><CardDescription>Approve students so they can view their results.</CardDescription></CardHeader>
+      <CardHeader><CardTitle>User Accounts</CardTitle><CardDescription>Approve students and teachers after registration.</CardDescription></CardHeader>
       <CardContent>
         <Table>
           <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Adm No</TableHead><TableHead>Email</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
           <TableBody>
             {rows.map((r) => (
-              <TableRow key={r.id}>
+              <TableRow key={r.user_id}>
                 <TableCell className="font-medium">{r.full_name || "—"}</TableCell>
                 <TableCell>{r.admission_no || "—"}</TableCell>
                 <TableCell>{r.email}</TableCell>
@@ -478,11 +485,11 @@ const StudentManager = () => {
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   {r.approved ? (
-                    <Button size="sm" variant="outline" onClick={() => setApproved(r.id, false)}><X className="w-4 h-4" /></Button>
+                    <Button size="sm" variant="outline" onClick={() => setApproved(r.user_id, false)}><X className="w-4 h-4" /></Button>
                   ) : (
-                    <Button size="sm" onClick={() => setApproved(r.id, true)}><Check className="w-4 h-4" /></Button>
+                    <Button size="sm" onClick={() => setApproved(r.user_id, true)}><Check className="w-4 h-4" /></Button>
                   )}
-                  <Button size="sm" variant="destructive" onClick={() => del(r.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button size="sm" variant="destructive" onClick={() => del(r.user_id)}><Trash2 className="w-4 h-4" /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -500,14 +507,14 @@ const parseCSV = (text: string) => {
   const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
   return lines.slice(1).map((line) => {
     const cells = line.split(",").map((c) => c.trim());
-    const obj: any = {};
+    const obj: Record<string, string> = {};
     headers.forEach((h, i) => { obj[h] = cells[i]; });
     return obj;
   });
 };
 
 const ResultsManager = () => {
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
@@ -539,8 +546,8 @@ const ResultsManager = () => {
       if (error) throw error;
       toast.success(`Uploaded ${payload.length} result rows`);
       load();
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setBusy(false);
       e.target.value = "";
@@ -597,7 +604,7 @@ const ResultsManager = () => {
 
 // ============== ADMIN INVITES ==============
 const AdminInvites = () => {
-  const [invites, setInvites] = useState<any[]>([]);
+  const [invites, setInvites] = useState<AdminInvite[]>([]);
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
 

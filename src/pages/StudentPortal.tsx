@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { LogOut, ShieldAlert } from "lucide-react";
 
-interface Profile { full_name: string; admission_no: string | null; approved: boolean; }
-interface Result { id: string; term: string; year: number; subject: string; marks: number; grade: string | null; remarks: string | null; }
+type Profile = Pick<Tables<"profiles">, "full_name" | "admission_no" | "approved">;
+type Result = Pick<Tables<"results">, "id" | "term" | "year" | "subject" | "marks" | "grade" | "remarks">;
 
 const StudentPortal = () => {
   const { user, signOut } = useAuth();
@@ -20,11 +21,11 @@ const StudentPortal = () => {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data: p } = await supabase.from("profiles").select("full_name, admission_no, approved").eq("id", user.id).maybeSingle();
-      setProfile(p as any);
+      const { data: p } = await supabase.from("profiles").select("full_name, admission_no, approved").eq("user_id", user.id).maybeSingle();
+      setProfile(p);
       if (p?.approved && p.admission_no) {
         const { data: r } = await supabase.from("results").select("*").eq("admission_no", p.admission_no).order("year", { ascending: false }).order("term");
-        setResults((r as any) ?? []);
+        setResults(r ?? []);
       }
       setLoading(false);
     })();

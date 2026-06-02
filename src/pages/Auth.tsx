@@ -59,7 +59,7 @@ const Auth = () => {
     });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
@@ -67,9 +67,31 @@ const Auth = () => {
         data: { full_name: parsed.data.full_name, admission_no: parsed.data.admission_no },
       },
     });
+    if (error) {
+      setBusy(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (data.user) {
+      const { error: profileError } = await supabase.from("profiles").insert({
+        user_id: data.user.id,
+        role: "student",
+        full_name: parsed.data.full_name,
+        admission_no: parsed.data.admission_no,
+        email: parsed.data.email,
+        approved: false,
+      });
+
+      if (profileError) {
+        setBusy(false);
+        toast.error(profileError.message);
+        return;
+      }
+    }
+
     setBusy(false);
-    if (error) toast.error(error.message);
-    else toast.success("Account created. Awaiting admin approval to view results.");
+    toast.success("Account created. Awaiting admin approval to view results.");
   };
 
   return (

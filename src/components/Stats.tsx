@@ -7,10 +7,10 @@ export type StatsItem = {
 };
 
 const defaultStats: StatsItem[] = [
-  { value: 800, suffix: "+", label: "Students" },
-  { value: 30, suffix: "+", label: "Teachers" },
+  { value: 12000, suffix: "+", label: "Students" },
+  { value: 80, suffix: "+", label: "Teachers" },
   { value: 12, suffix: "", label: "Streams" },
-  { value: 12000, suffix: "+", label: "Alumni" },
+  { value: 22000, suffix: "+", label: "Alumni" },
 ];
 
 const useCounter = (target: number, active: boolean, duration = 1800) => {

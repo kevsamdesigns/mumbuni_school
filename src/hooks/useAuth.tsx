@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-type Role = "admin" | "student";
+type Role = "admin" | "student" | "teacher";
 
 interface AuthState {
   user: User | null;
@@ -11,6 +11,7 @@ interface AuthState {
   loading: boolean;
   isAdmin: boolean;
   isStudent: boolean;
+  isTeacher: boolean;
   signOut: () => Promise<void>;
   refreshRoles: () => Promise<void>;
 }
@@ -24,20 +25,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const loadRoles = async (uid: string) => {
-    // Auto-claim admin if this user's email has a pending invite
-    try { await supabase.rpc("claim_admin_invite"); } catch {}
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setRoles((data ?? []).map((r: any) => r.role as Role));
+    await supabase.rpc("claim_admin_invite");
+    const { data } = await supabase.from("profiles").select("role").eq("user_id", uid).maybeSingle();
+    setRoles(data?.role ? [data.role as Role] : []);
   };
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
       setUser(s?.user ?? null);
+      setLoading(true);
       if (s?.user) {
-        setTimeout(() => loadRoles(s.user.id), 0);
+        setTimeout(() => {
+          loadRoles(s.user.id).finally(() => setLoading(false));
+        }, 0);
       } else {
         setRoles([]);
+        setLoading(false);
       }
     });
 
@@ -60,8 +64,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         isAdmin: roles.includes("admin"),
         isStudent: roles.includes("student"),
+        isTeacher: roles.includes("teacher"),
         signOut: async () => { await supabase.auth.signOut(); },
-        refreshRoles: async () => { if (user) await loadRoles(user.id); },
+        refreshRoles: async () => {
+          const currentUser = user ?? (await supabase.auth.getUser()).data.user;
+          if (currentUser) await loadRoles(currentUser.id);
+        },
       }}
     >
       {children}

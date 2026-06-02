@@ -83,10 +83,10 @@ const homeDefaults = {
     "Mumbuni Boys Senior School is committed to academic excellence, discipline, leadership, and holistic growth. We prepare young men to serve their communities with confidence, skill, and integrity.",
   "principal.message":
     "Welcome to Mumbuni Boys Senior School, a center of academic excellence, character formation, and holistic development.\n\nAt Mumbuni Boys, we believe that education extends beyond the classroom. Our mission is to nurture responsible, disciplined, and confident young men who are equipped with the knowledge, skills, and values needed to thrive in a rapidly changing world. Through quality teaching, innovation, mentorship, and co-curricular activities, we empower every learner to discover and maximize their potential.\n\nWe are committed to creating a supportive and inclusive learning environment where academic achievement, integrity, leadership, and personal growth are highly valued. Our dedicated staff work tirelessly to inspire excellence and cultivate a culture of hard work, respect, and lifelong learning.\n\nAs we continue to uphold our tradition of excellence, we warmly invite parents, guardians, alumni, and all stakeholders to partner with us in shaping the future of our learners. Together, we can prepare young men who will make meaningful contributions to their communities, our nation, and the world.\n\nThank you for visiting our website and for your interest in Mumbuni Boys Senior School.\n\nTogether We Excel.",
-  "stats.students": "800+",
-  "stats.teachers": "30+",
+  "stats.students": "12,000+",
+  "stats.teachers": "80+",
   "stats.streams": "12",
-  "stats.alumni": "12000+",
+  "stats.alumni": "22,000+",
 } as const;
 
 const parseStatValue = (value: string) => {

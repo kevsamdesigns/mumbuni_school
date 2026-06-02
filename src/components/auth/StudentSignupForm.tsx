@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { generateStudentEmail } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export function StudentSignupForm() {
   const [formData, setFormData] = useState({
@@ -61,6 +62,7 @@ export function StudentSignupForm() {
           role: 'student',
           admission_no: formData.admission_no,
           full_name: formData.full_name,
+          email,
           form: formData.form,
           stream: formData.stream,
           gender: formData.gender,
@@ -74,7 +76,7 @@ export function StudentSignupForm() {
       
       setSuccess(true);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -112,13 +114,13 @@ export function StudentSignupForm() {
         />
       </div>
 
-      <div>
-        <label>Form/Class*</label>
+      <div className="space-y-2">
+        <Label>Form/Class*</Label>
         <select 
           name="form" 
           value={formData.form} 
-          onChange={handleChange} 
-          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700"
+          onChange={handleSelectChange} 
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required
         >
           <option value="">Select Form</option>
@@ -142,13 +144,13 @@ export function StudentSignupForm() {
         />
       </div>
 
-      <div>
-        <label>Gender</label>
+      <div className="space-y-2">
+        <Label>Gender</Label>
         <select 
           name="gender" 
           value={formData.gender} 
-          onChange={handleChange}
-          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700"
+          onChange={handleSelectChange}
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         >
           <option value="">Select Gender</option>
           <option value="male">Male</option>
@@ -169,51 +171,59 @@ export function StudentSignupForm() {
         />
       </div>
 
-      <div>
-        <label>Parent Phone Number</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Parent Phone Number</Label>
+        <Input 
           type="tel" 
           name="parent_phone" 
           value={formData.parent_phone} 
           onChange={handleChange} 
+          placeholder="Enter parent phone number"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
-      <div>
-        <label>KCPE Index Number</label>
-        <input 
+      <div className="space-y-2">
+        <Label>KCPE Index Number</Label>
+        <Input 
           type="text" 
           name="kcpe_index" 
           value={formData.kcpe_index} 
           onChange={handleChange} 
+          placeholder="Enter KCPE index number"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
         />
       </div>
 
-      <div>
-        <label>Password*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Password*</Label>
+        <Input 
           type="password" 
           name="password" 
           value={formData.password} 
           onChange={handleChange} 
+          placeholder="Enter password"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <div>
-        <label>Confirm Password*</label>
-        <input 
+      <div className="space-y-2">
+        <Label>Confirm Password*</Label>
+        <Input 
           type="password" 
           name="confirm_password" 
           value={formData.confirm_password} 
           onChange={handleChange} 
+          placeholder="Confirm password"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required 
         />
       </div>
 
-      <button type="submit" disabled={loading}>
+      <Button type="submit" className="w-full h-12" disabled={loading}>
         {loading ? 'Registering...' : 'Register'}
-      </button>
+      </Button>
     </form>
   );
 }
