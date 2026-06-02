@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, Phone, LogIn, LayoutDashboard, GraduationCap, Mail, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
+import { Menu, X, Phone, LogIn, LogOut, LayoutDashboard, GraduationCap, Mail, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/mumbuni-logo.png";
@@ -19,7 +19,7 @@ export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -84,12 +84,18 @@ export const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-2">
           {user ? (
-            <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-secondary/15 hover:text-primary" asChild>
-              <Link to={isAdmin ? "/admin" : "/portal"}>
-                {isAdmin ? <LayoutDashboard className="w-4 h-4" /> : <GraduationCap className="w-4 h-4" />}
-                {isAdmin ? "Admin" : "My Portal"}
-              </Link>
-            </Button>
+            <>
+              <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-secondary/15 hover:text-primary" asChild>
+                <Link to={isAdmin ? "/admin" : "/portal"}>
+                  {isAdmin ? <LayoutDashboard className="w-4 h-4" /> : <GraduationCap className="w-4 h-4" />}
+                  {isAdmin ? "Admin" : "My Portal"}
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" className="text-primary hover:bg-secondary/15 hover:text-primary" onClick={signOut}>
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </>
           ) : (
             <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-secondary/15 hover:text-primary" asChild>
               <Link to="/auth"><LogIn className="w-4 h-4" />Login</Link>
@@ -128,6 +134,12 @@ export const Navbar = () => {
                 {user ? (isAdmin ? "Admin Dashboard" : "My Portal") : "Login / Sign Up"}
               </Link>
             </Button>
+            {user && (
+              <Button variant="ghost" className="mt-2 justify-center text-primary hover:bg-secondary/15 hover:text-primary" onClick={signOut}>
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            )}
             <Button variant="hero" className="mt-2" asChild>
               <Link to="/contact">Apply Now</Link>
             </Button>

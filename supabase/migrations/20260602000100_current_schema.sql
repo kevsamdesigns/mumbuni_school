@@ -270,10 +270,13 @@ $$;
 REVOKE EXECUTE ON FUNCTION public.is_admin(uuid) FROM public, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.set_updated_at() FROM public, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.claim_admin_invite() FROM public, anon;
+GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.claim_admin_invite() TO authenticated;
 
 INSERT INTO public.admin_invites (email)
-VALUES ('kevinwambua96@gmail.com')
+VALUES
+  ('kevinwambua96@gmail.com'),
+  ('kevsamdesigns@gmail.com')
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO storage.buckets (id, name, public)
