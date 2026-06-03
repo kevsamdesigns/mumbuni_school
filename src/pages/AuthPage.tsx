@@ -13,6 +13,13 @@ import logo from '@/assets/mumbuni-logo.png';
 
 type AuthMode = 'login' | 'signup';
 type UserType = 'student' | 'teacher' | 'admin';
+type Role = 'admin' | 'teacher' | 'student';
+
+const roleDestinations: Record<Role, string> = {
+  admin: '/admin-dashboard',
+  teacher: '/teacher-dashboard',
+  student: '/student-portal',
+};
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -53,17 +60,22 @@ export function AuthPage() {
       return;
     }
 
-    refreshRoles().catch((refreshError) => {
-      console.error('Role refresh after login failed:', refreshError);
-    });
+    const role = await refreshRoles();
+    console.log('User role:', role);
+
+    if (!role) {
+      setLoading(false);
+      toast.error('Your account role could not be loaded. Please try again or contact the school admin.');
+      return;
+    }
+
+    const destination = roleDestinations[role];
+    console.log('Redirecting to:', destination);
 
     setLoading(false);
     clearLoginDetails();
     toast.success('Welcome back');
-
-    if (userType === 'admin') navigate('/admin-dashboard', { replace: true });
-    else if (userType === 'teacher') navigate('/teacher-dashboard', { replace: true });
-    else navigate('/student-portal', { replace: true });
+    navigate(destination, { replace: true });
   };
 
   return (

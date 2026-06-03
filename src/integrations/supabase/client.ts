@@ -21,7 +21,13 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
 
 // Helper function to generate student email
 export function generateStudentEmail(admissionNo: string): string {
-  return `${admissionNo}@student.local`;
+  const normalizedAdmissionNo = admissionNo
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.+|\.+$/g, "");
+
+  return `${normalizedAdmissionNo || "student"}@students.mumbuniboys.ac.ke`;
 }
 
 // Role type guard helpers

@@ -13,7 +13,7 @@ interface AuthState {
   isStudent: boolean;
   isTeacher: boolean;
   signOut: () => Promise<void>;
-  refreshRoles: () => Promise<void>;
+  refreshRoles: () => Promise<Role | undefined>;
   debugRoles?: () => void;
 }
 
@@ -45,17 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log("Loading profile for:", uid);
       console.log("Skipping claim_admin_invite RPC");
       console.log("Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
-
-      console.log("About to run direct profiles diagnostic");
-      {
-        const result = await supabase
-          .from("profiles")
-          .select("role,user_id")
-          .limit(1);
-
-        console.log("Direct profiles diagnostic returned");
-        console.log(result);
-      }
 
       console.log("About to run profiles test query");
       const test = await Promise.race([
@@ -212,7 +201,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
         refreshRoles: async () => {
           const currentUser = user ?? (await supabase.auth.getUser()).data.user;
-          if (currentUser) await loadRoles(currentUser.id);
+          if (currentUser) return loadRoles(currentUser.id);
+          return undefined;
         },
       }}
     >

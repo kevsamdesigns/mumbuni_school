@@ -35,6 +35,7 @@ export function StudentSignupForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     
     if (formData.password !== formData.confirm_password) {
       setError('Passwords do not match');
