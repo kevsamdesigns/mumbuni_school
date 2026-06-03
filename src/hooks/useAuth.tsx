@@ -26,31 +26,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const loadRoles = async (uid: string) => {
-    console.log("Auth user:", uid);
-    await supabase.rpc("claim_admin_invite");
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role,user_id,email")
-      .eq("user_id", uid)
-      .maybeSingle();
-    console.log("Profile query result:", data);
-    console.log("Profile query error:", error);
-    const role = data?.role as Role | undefined;
-    console.log("Roles loaded:", role);
-    setRoles(role ? [role] : []);
+    console.log("Entering loadRoles for user:", uid);
+    
+    try {
+      console.log("Calling claim_admin_invite RPC");
+      const rpcResult = await supabase.rpc("claim_admin_invite");
+      console.log("RPC result:", rpcResult);
+      
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role,user_id,email")
+        .eq("user_id", uid)
+        .maybeSingle();
+      console.log("Profile query result:", data);
+      console.log("Profile query error:", error);
+      
+      if (error) {
+        console.error("Failed to load profile:", error);
+        throw error;
+      }
+      
+      const role = data?.role as Role | undefined;
+      console.log("Roles loaded:", role);
+      setRoles(role ? [role] : []);
+      
+      return role;
+    } catch (e) {
+      console.error("Error in loadRoles:", e);
+      throw e;
+    }
   };
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange(async (_e, s) => {
+      console.log("Auth state changed - loading start");
+      console.log("Session:", s);
+      console.log("User:", s?.user);
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(true);
       if (s?.user) {
-        await loadRoles(s.user.id);
-        setLoading(false);
+        try {
+          await loadRoles(s.user.id);
+        } catch (e) {
+          console.error("Error loading roles:", e);
+        } finally {
+          setLoading(false);
+          console.log("Auth state changed - loading end");
+        }
       } else {
         setRoles([]);
         setLoading(false);
+        console.log("Auth state changed - loading end (no user)");
       }
     });
 
@@ -58,8 +85,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        await loadRoles(session.user.id);
-        setLoading(false);
+        try {
+          await loadRoles(session.user.id);
+        } catch (e) {
+          console.error("Session load error:", e);
+        } finally {
+          setLoading(false);
+        }
       } else {
         setLoading(false);
       }
