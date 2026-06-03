@@ -58,9 +58,9 @@ export function AuthPage() {
     clearLoginDetails();
     toast.success('Welcome back');
 
-    if (userType === 'admin') navigate('/admin', { replace: true });
-    else if (userType === 'teacher') navigate('/teacher', { replace: true });
-    else navigate('/portal', { replace: true });
+    if (userType === 'admin') navigate('/admin-dashboard', { replace: true });
+    else if (userType === 'teacher') navigate('/teacher-dashboard', { replace: true });
+    else navigate('/student-portal', { replace: true });
   };
 
   return (

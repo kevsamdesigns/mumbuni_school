@@ -14,6 +14,7 @@ interface AuthState {
   isTeacher: boolean;
   signOut: () => Promise<void>;
   refreshRoles: () => Promise<void>;
+  debugRoles?: () => void;
 }
 
 const Ctx = createContext<AuthState | undefined>(undefined);
@@ -25,9 +26,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const loadRoles = async (uid: string) => {
+    console.log("Auth user:", uid);
     await supabase.rpc("claim_admin_invite");
-    const { data } = await supabase.from("profiles").select("role").eq("user_id", uid).maybeSingle();
-    setRoles(data?.role ? [data.role as Role] : []);
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("role,user_id,email")
+      .eq("user_id", uid)
+      .maybeSingle();
+    console.log("Profile query result:", data);
+    console.log("Profile query error:", error);
+    const role = data?.role as Role | undefined;
+    console.log("Roles loaded:", role);
+    setRoles(role ? [role] : []);
   };
 
   useEffect(() => {
@@ -66,6 +76,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         roles,
         loading,
         isAdmin: roles.includes("admin"),
+        debugRoles: () => {
+          console.log("Current roles:", roles);
+          console.log("isAdmin:", roles.includes("admin"));
+        },
         isStudent: roles.includes("student"),
         isTeacher: roles.includes("teacher"),
         signOut: async () => { await supabase.auth.signOut(); },
