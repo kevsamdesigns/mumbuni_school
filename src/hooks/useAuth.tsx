@@ -28,6 +28,11 @@ const stringifyError = (err: unknown) =>
     2
   );
 
+const timeoutAfter = (message: string, ms: number) =>
+  new Promise<never>((_, reject) =>
+    window.setTimeout(() => reject(new Error(message)), ms)
+  );
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -39,12 +44,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log("Entering loadRoles for user:", uid);
       console.log("Loading profile for:", uid);
       console.log("Skipping claim_admin_invite RPC");
+      console.log("Supabase URL:", import.meta.env.VITE_SUPABASE_URL);
+
+      console.log("About to run direct profiles diagnostic");
+      {
+        const result = await supabase
+          .from("profiles")
+          .select("role,user_id")
+          .limit(1);
+
+        console.log("Direct profiles diagnostic returned");
+        console.log(result);
+      }
+
+      console.log("About to run profiles test query");
+      const test = await Promise.race([
+        supabase
+          .from("profiles")
+          .select("user_id, role")
+          .limit(1),
+        timeoutAfter("Profiles test query timeout", 10000),
+      ]);
+      console.log("Test query:", test);
       
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", uid)
-        .maybeSingle();
+      console.log("About to query profiles");
+      const result = await Promise.race([
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", uid)
+          .single(),
+        timeoutAfter("Profile query timeout", 10000),
+      ]);
+      console.log("Profile query returned");
+
+      const { data, error } = result;
       
       console.log("Profile query uid:", uid);
       console.log("Profile query data:", data);

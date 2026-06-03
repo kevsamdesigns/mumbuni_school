@@ -53,7 +53,10 @@ export function AuthPage() {
       return;
     }
 
-    await refreshRoles();
+    refreshRoles().catch((refreshError) => {
+      console.error('Role refresh after login failed:', refreshError);
+    });
+
     setLoading(false);
     clearLoginDetails();
     toast.success('Welcome back');
