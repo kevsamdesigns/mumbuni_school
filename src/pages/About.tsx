@@ -3,7 +3,6 @@ import { PageHeader } from "@/components/PageHeader";
 import { useContent } from "@/hooks/useContent";
 import campusAerial from "@/assets/brand-campus-aerial.png";
 import deputyOloo from "@/assets/deputy-oloo.jpg";
-import deputyAgnes from "@/assets/deputy-agnes.jpg";
 
 const aboutDefaults = {
   "header.eyebrow": "Who We Are",
@@ -25,11 +24,11 @@ const aboutDefaults = {
   "leadership.eyebrow": "School Leadership",
   "leadership.heading": "Leadership and Student Support",
   "leadership.body": "A dedicated team driving academic excellence, discipline and a thriving school community.",
-  "deputy.academics.name": "Deputy Principal - Academics",
-  "deputy.academics.role": "Academic Programmes",
+  "deputy.academics.name": "Mr. Mutisya",
+  "deputy.academics.role": "Deputy Academics",
   "deputy.academics.message": "Our academic programme is anchored on strong classroom instruction, regular assessment, mentorship and a culture of continuous improvement.",
-  "deputy.admin.name": "Deputy Principal - Administration",
-  "deputy.admin.role": "Student Welfare & Discipline",
+  "deputy.admin.name": "Mr. Masuki",
+  "deputy.admin.role": "Deputy Administration",
   "deputy.admin.message": "We provide a structured environment where learners are safe, disciplined, responsible and supported to grow into dependable young men.",
   "staff.eyebrow": "Departmental Heads",
   "staff.heading": "Senior Staff",
@@ -69,7 +68,7 @@ const About = () => {
     name: getContent("deputy.admin.name", aboutDefaults["deputy.admin.name"]),
     role: getContent("deputy.admin.role", aboutDefaults["deputy.admin.role"]),
     icon: ShieldCheck,
-    photo: deputyAgnes,
+    photo: deputyOloo,
     message: getContent("deputy.admin.message", aboutDefaults["deputy.admin.message"]),
   },
   ];

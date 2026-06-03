@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { generateStudentEmail } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button';
 export function StudentSignupForm() {
   const [formData, setFormData] = useState({
     admission_no: '',
+    email: '',
     full_name: '',
     form: '',
     stream: '',
@@ -44,8 +44,7 @@ export function StudentSignupForm() {
 
     setLoading(true);
     try {
-      // Generate hidden email for student
-      const email = generateStudentEmail(formData.admission_no);
+      const email = formData.email.trim().toLowerCase();
       
       // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -97,6 +96,19 @@ export function StudentSignupForm() {
           value={formData.admission_no}
           onChange={handleChange}
           placeholder="Enter admission number"
+          className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Email Address*</Label>
+        <Input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Enter email address"
           className="w-full h-12 border-2 border-gray-300 rounded-lg px-4 bg-white text-black focus:border-red-700 focus:ring-2 focus:ring-red-200"
           required
         />

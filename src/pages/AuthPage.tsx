@@ -46,7 +46,7 @@ export function AuthPage() {
       return;
     }
 
-    const email = userType === 'student'
+    const email = userType === 'student' && !trimmedUsername.includes('@')
       ? generateStudentEmail(trimmedUsername)
       : trimmedUsername.toLowerCase();
 
@@ -152,7 +152,7 @@ export function AuthPage() {
                     <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
                       <div className="space-y-2">
                         <Label htmlFor="username">
-                          {userType === 'student' ? 'Admission Number' : userType === 'teacher' ? 'Staff Number/Email' : 'Admin Email'}
+                          {userType === 'student' ? 'Email or Admission Number' : userType === 'teacher' ? 'Staff Number/Email' : 'Admin Email'}
                         </Label>
                         <Input 
                           id="username" 
