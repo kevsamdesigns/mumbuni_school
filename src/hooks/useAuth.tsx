@@ -29,15 +29,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log("Entering loadRoles for user:", uid);
     
     try {
-      console.log("Calling claim_admin_invite RPC");
-      const rpcResult = await supabase.rpc("claim_admin_invite");
-      console.log("RPC result:", rpcResult);
+      console.log("Skipping claim_admin_invite RPC");
       
       const { data, error } = await supabase
         .from("profiles")
-        .select("role,user_id,email")
+        .select<"role", { role: string }>("role")
         .eq("user_id", uid)
         .maybeSingle();
+      
       console.log("Profile query result:", data);
       console.log("Profile query error:", error);
       
@@ -46,9 +45,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw error;
       }
       
-      const role = data?.role as Role | undefined;
+      if (!data) {
+        console.warn("No profile data found for user:", uid);
+        setRoles([]);
+        return undefined;
+      }
+      
+      const role = data.role as Role;
       console.log("Roles loaded:", role);
-      setRoles(role ? [role] : []);
+      setRoles([role]);
       
       return role;
     } catch (e) {
@@ -58,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    console.log("AuthProvider mounted");
     const { data: sub } = supabase.auth.onAuthStateChange(async (_e, s) => {
       console.log("Auth state changed - loading start");
       console.log("Session:", s);
@@ -73,6 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } finally {
           setLoading(false);
           console.log("Auth state changed - loading end");
+          console.log("Loading false reached");
         }
       } else {
         setRoles([]);
@@ -114,7 +121,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
         isStudent: roles.includes("student"),
         isTeacher: roles.includes("teacher"),
-        signOut: async () => { await supabase.auth.signOut(); },
+        signOut: async () => {
+          console.log("Signing out");
+          await supabase.auth.signOut();
+        },
         refreshRoles: async () => {
           const currentUser = user ?? (await supabase.auth.getUser()).data.user;
           if (currentUser) await loadRoles(currentUser.id);
