@@ -36,9 +36,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(s?.user ?? null);
       setLoading(true);
       if (s?.user) {
-        setTimeout(() => {
-          loadRoles(s.user.id).finally(() => setLoading(false));
-        }, 0);
+        await loadRoles(s.user.id);
+      setLoading(false);
       } else {
         setRoles([]);
         setLoading(false);
@@ -48,7 +47,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) loadRoles(session.user.id).finally(() => setLoading(false));
+        if (session?.user) {
+          await loadRoles(session.user.id);
+          setLoading(false);
+        };
       else setLoading(false);
     });
 

@@ -86,9 +86,9 @@ export const Navbar = () => {
           {user ? (
             <>
               <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-secondary/15 hover:text-primary" asChild>
-                <Link to={isAdmin ? "/admin" : "/portal"}>
+                <Link to={isAdmin ? "/admin-dashboard" : "/student-portal"}>
                   {isAdmin ? <LayoutDashboard className="w-4 h-4" /> : <GraduationCap className="w-4 h-4" />}
-                  {isAdmin ? "Admin" : "My Portal"}
+                  {isAdmin ? "Admin Dashboard" : "My Portal"}
                 </Link>
               </Button>
               <Button variant="ghost" size="sm" className="text-primary hover:bg-secondary/15 hover:text-primary" onClick={signOut}>
@@ -130,8 +130,8 @@ export const Navbar = () => {
               </li>
             ))}
             <Button variant="outline" className="mt-2 border-primary text-primary hover:bg-secondary/15 hover:text-primary" asChild>
-              <Link to={user ? (isAdmin ? "/admin" : "/portal") : "/auth"}>
-                {user ? (isAdmin ? "Admin Dashboard" : "My Portal") : "Login / Sign Up"}
+                <Link to={user ? (isAdmin ? "/admin-dashboard" : "/student-portal") : "/auth"}>
+                  {user ? (isAdmin ? "Admin Dashboard" : "My Portal") : "Login / Sign Up"}
               </Link>
             </Button>
             {user && (
