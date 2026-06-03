@@ -19,6 +19,15 @@ interface AuthState {
 
 const Ctx = createContext<AuthState | undefined>(undefined);
 
+const stringifyError = (err: unknown) =>
+  JSON.stringify(
+    err instanceof Error
+      ? { name: err.name, message: err.message, stack: err.stack }
+      : err,
+    null,
+    2
+  );
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -26,29 +35,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const loadRoles = async (uid: string) => {
-    console.log("Entering loadRoles for user:", uid);
-    
     try {
+      console.log("Entering loadRoles for user:", uid);
+      console.log("Loading profile for:", uid);
       console.log("Skipping claim_admin_invite RPC");
       
       const { data, error } = await supabase
         .from("profiles")
-        .select<"role", { role: string }>("role")
+        .select("*")
         .eq("user_id", uid)
         .maybeSingle();
       
-      console.log("Profile query result:", data);
-      console.log("Profile query error:", error);
+      console.log("Profile query uid:", uid);
+      console.log("Profile query data:", data);
+      console.log("Profile query error:", error ? stringifyError(error) : null);
+      console.log("Profile error code:", error?.code);
+      console.log("Profile error message:", error?.message);
+      console.log("Profile error details:", error?.details);
+      console.log("Profile error hint:", error?.hint);
       
       if (error) {
-        console.error("Failed to load profile:", error);
-        throw error;
+        console.error("Profile query failed:", stringifyError(error));
+        setRoles([]);
+        return;
       }
       
       if (!data) {
         console.warn("No profile data found for user:", uid);
         setRoles([]);
-        return undefined;
+        return;
       }
       
       const role = data.role as Role;
@@ -56,15 +71,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRoles([role]);
       
       return role;
-    } catch (e) {
-      console.error("Error in loadRoles:", e);
-      throw e;
+    } catch (err) {
+      console.error("loadRoles exception:", stringifyError(err));
+      setRoles([]);
+      return;
+    } finally {
+      console.log("loadRoles completed");
     }
   };
 
   useEffect(() => {
     console.log("AuthProvider mounted");
+    const loadingTimeouts: number[] = [];
+    const forceLoadingFalseAfterDelay = () => {
+      const timeout = window.setTimeout(() => {
+        console.warn("Auth loading timeout reached; forcing loading false");
+        setLoading(false);
+      }, 5000);
+
+      loadingTimeouts.push(timeout);
+      return timeout;
+    };
+
+    const initialLoadingTimeout = forceLoadingFalseAfterDelay();
+
     const { data: sub } = supabase.auth.onAuthStateChange(async (_e, s) => {
+      const authLoadingTimeout = forceLoadingFalseAfterDelay();
       console.log("Auth state changed - loading start");
       console.log("Session:", s);
       console.log("User:", s?.user);
@@ -75,18 +107,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           await loadRoles(s.user.id);
         } catch (e) {
-          console.error("Error loading roles:", e);
+          console.error("Error loading roles:", stringifyError(e));
         } finally {
+          window.clearTimeout(authLoadingTimeout);
           setLoading(false);
           console.log("Auth state changed - loading end");
           console.log("Loading false reached");
         }
       } else {
+        window.clearTimeout(authLoadingTimeout);
         setRoles([]);
         setLoading(false);
         console.log("Auth state changed - loading end (no user)");
       }
     });
+
+    const sessionLoadingTimeout = forceLoadingFalseAfterDelay();
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
@@ -95,16 +131,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           await loadRoles(session.user.id);
         } catch (e) {
-          console.error("Session load error:", e);
+          console.error("Session load error:", stringifyError(e));
         } finally {
+          window.clearTimeout(sessionLoadingTimeout);
+          window.clearTimeout(initialLoadingTimeout);
           setLoading(false);
         }
       } else {
+        window.clearTimeout(sessionLoadingTimeout);
+        window.clearTimeout(initialLoadingTimeout);
         setLoading(false);
       }
     });
 
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      loadingTimeouts.forEach((timeout) => window.clearTimeout(timeout));
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   return (
@@ -123,7 +166,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isTeacher: roles.includes("teacher"),
         signOut: async () => {
           console.log("Signing out");
-          await supabase.auth.signOut();
+          setRoles([]);
+          setUser(null);
+          setSession(null);
+          setLoading(false);
+
+          const { error } = await supabase.auth.signOut();
+          if (error) {
+            console.error("Sign out failed:", stringifyError(error));
+          }
         },
         refreshRoles: async () => {
           const currentUser = user ?? (await supabase.auth.getUser()).data.user;
